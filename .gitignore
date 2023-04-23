@@ -1,0 +1,7 @@
+# ide settings
+.idea
+*.iml
+*.log
+
+# node temparary / env related data
+node_modules
