@@ -97,11 +97,13 @@ app.delete('/items/:index', async (request, response) => {
 
     const itemIndex = request.params['index'];
 
-    shoppingList.splice(itemIndex, 1)
-
-    await promises.writeFile(DATA_FILE, JSON.stringify(shoppingList), {encoding: 'utf-8'})
-
-    response.sendStatus(200);
+    if(itemIndex >= shoppingList.length){
+        response.sendStatus(404);
+    } else {
+        shoppingList.splice(itemIndex, 1)
+        await promises.writeFile(DATA_FILE, JSON.stringify(shoppingList), {encoding: 'utf-8'})
+        response.sendStatus(200);
+    }
 })
 
 app.post(
