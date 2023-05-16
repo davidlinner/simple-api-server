@@ -12,5 +12,8 @@ document.addEventListener("DOMContentLoaded", async (event) => {
     })
 });
 
-
-
+OBJ  =
+{
+    firstName: 'abc',
+    lastName: 'xyz'
+}
