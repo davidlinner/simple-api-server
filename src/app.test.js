@@ -4,8 +4,8 @@ import request from 'supertest'
 
 describe('API Server Test', ()=>{
 
-    beforeEach(() => {
-        clearDataFile();
+    beforeEach(async () => {
+        await clearDataFile();
     });
 
     test('Test getting items', async ()=> {

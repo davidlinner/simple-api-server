@@ -1,7 +1,7 @@
 import {Router} from "express";
 import failOnInvalidData from "../failOnInvalidData.js";
 import {body} from "express-validator";
-import {readItems, saveItems} from "../data";
+import {readItems, saveItems} from "../data.js";
 
 const itemsRouter = Router();
 
@@ -43,6 +43,7 @@ itemsRouter.put(
     })
 
 itemsRouter.patch('/items/:index',
+    failOnInvalidData,
     async (request, response) => {
 
         const shoppingList = await readItems();
@@ -81,6 +82,8 @@ itemsRouter.delete('/items/:index', async (request, response) => {
 
 itemsRouter.post(
     '/items',
+    validateShoppingListItem(),
+    failOnInvalidData,
     async (request, response) => {
         const shoppingList = await readItems()
 
