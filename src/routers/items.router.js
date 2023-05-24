@@ -1,3 +1,26 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ShoppingListItem:
+ *       type: object
+ *       required:
+ *         - name
+ *         - quantity
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Item name, for example 'milk'
+ *         quantity:
+ *           type: number
+ *           description: The quantity of the item.
+ *       example:
+ *         name: milk
+ *         quantity: 1
+ *
+ */
+
+
 import {Router} from "express";
 import failOnInvalidData from "../failOnInvalidData.js";
 import {body} from "express-validator";
@@ -11,17 +34,52 @@ const validateShoppingListItem = () => [
 ]
 
 /**
- * Return all shopping list items as JSON.
+ * @openapi
+ * /items:
+ *   get:
+ *      description: Returns all items on the shopping list.
+ *      responses:
+ *         200:
+ *              description: Returns all shopping list items.
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/ShoppingListItem'
+ *         404:
+ *              description: Nothing found.
  */
 itemsRouter.get('/items', async (request, response) => {
     const shoppingList = await readItems();
     response.json(shoppingList);
 })
 
-
 /**
- * Override a shopping list item at a given position.
- * {name:'abc', quantity:1}
+ * @openapi
+ * /items/{index}:
+ *   put:
+ *      description: Returns all items on the shopping list.
+ *      parameters:
+ *         - in: path
+ *           name: index
+ *           schema:
+ *             type: integer
+ *           required: true
+ *           description: Numeric index of an item in the shopping list.
+ *      requestBody:
+ *          description: The full update for an item.
+ *          required: true
+ *          content:
+ *                application/json:
+ *                     schema:
+ *                        $ref: '#/components/schemas/ShoppingListItem'
+ *      responses:
+ *         200:
+ *              description: Item was successfully updated.
+ *
+ *         404:
+ *              description: No item at this index.
  */
 itemsRouter.put(
     '/items/:index',
