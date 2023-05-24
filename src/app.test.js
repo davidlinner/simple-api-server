@@ -1,4 +1,5 @@
-import app, {clearDataFile} from './app.js'
+import app from './app.js'
+import {clearDataFile} from "./data.js";
 import request from 'supertest'
 
 describe('API Server Test', ()=>{
@@ -28,7 +29,74 @@ describe('API Server Test', ()=>{
         expect(response2.statusCode).toBe(200);
         expect(response2.body).toEqual(expect.arrayContaining([item]));
     })
-    
+
+    describe('PUT /items', ()=> {
+
+        test('Test updating an item works', async ()=> {
+            const item = {
+                name: 'Flour',
+                quantity: 1
+            }
+
+            const itemUpdate = {
+                name: 'Milk',
+                quantity: 2
+            }
+
+            let response = await request(app)
+                .post('/items')
+                .send(item);
+            expect(response.statusCode).toBe(200);
+
+            response = await request(app)
+                .put('/items/0')
+                .send(itemUpdate);
+            expect(response.statusCode).toBe(200);
+
+            response = await request(app).get('/items');
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toEqual(expect.arrayContaining([itemUpdate]));
+        })
+
+        test('Test updating an item fails if index not in list ', async ()=> {
+
+            const itemUpdate = {
+                name: 'Milk',
+                quantity: 2
+            }
+
+            let response = await request(app)
+                .put('/items/0')
+                .send(itemUpdate);
+            expect(response.statusCode).toBe(404);
+
+        })
+
+        test('Test updating an item fails if sent item is invalid ', async ()=> {
+
+            const item = {
+                name: 'Flour',
+                quantity: 1
+            }
+
+            const itemUpdate = {
+                name: '',
+                quantity: 0
+            }
+
+            let response = await request(app)
+                .post('/items')
+                .send(item);
+            expect(response.statusCode).toBe(200);
+
+            response = await request(app)
+                .put('/items/0')
+                .send(itemUpdate);
+            expect(response.statusCode).toBe(400);        })
+
+    })
+
+
     // more test cases
     // 1. patch
     //     post item
