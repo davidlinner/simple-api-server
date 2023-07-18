@@ -3,20 +3,22 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import basicAuth from 'express-basic-auth';
 import bcrypt from 'bcrypt';
-
-import itemsRouter from "./routers/items.router.js";
+import cors from 'cors';
 import {createDataFileIfNotExists} from "./data.js";
+import patientRouter from "./routers/patient.router.js";
 
 const app = express()
+
+app.use(cors());
+
 app.use(express.static('www'));
-app.use(express.urlencoded());
 app.use(express.json());
 
 const USERS = {
-    'david' : '$2b$10$3vLRdEC62e1On1/CrfJt.OE1vG4y2kAjjPyNXx04GpfcMBNLjpA1i'
+    'api' : '$2b$10$3vLRdEC62e1On1/CrfJt.OE1vG4y2kAjjPyNXx04GpfcMBNLjpA1i'
 }
 
-async function myAuthorizer(username, password, callback) {
+async function simpleAuthorizer(username, password, callback) {
     if (Object.keys(USERS).includes(username)){
         const passwordMatches = await bcrypt.compare(password, USERS[username]);
         callback(null, passwordMatches)
@@ -26,20 +28,20 @@ async function myAuthorizer(username, password, callback) {
 }
 
 app.use(basicAuth({
-    authorizer: myAuthorizer,
+    authorizer: simpleAuthorizer,
     authorizeAsync: true,
 }))
 
 app.use(createDataFileIfNotExists());
 
-app.use('/', itemsRouter)
+app.use('/', patientRouter)
 
 const openAPIOptions = {
     failOnErrors: true, // Whether or not to throw when parsing errors. Defaults to false.
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Shopping List',
+            title: 'Patient service',
             version: '1.0.0',
         },
     },
@@ -52,5 +54,6 @@ app.use(
     swaggerUi.serve,
     swaggerUi.setup(openapiSpecification)
 );
+
 
 export default app
