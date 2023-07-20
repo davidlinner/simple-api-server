@@ -1,0 +1,33 @@
+[
+  {
+    "id": 1,
+    "title": "Aufnahme zur Adipositasbehandlung",
+    "preparation": [
+      "24 Stunden vor dem Termin nicht mehr essen und trinken."
+    ],
+    "requiredPrerequisite": [
+      {
+        "id": 1,
+        "title": "Document 1"
+      },
+      {
+        "id": 2,
+        "title": "Document 2"
+      },
+      {
+        "id": 3,
+        "title": "Document 3"
+      },
+      {
+        "id": 4,
+        "title": "Document 4"
+      }
+    ],
+    "optionalPrerequisite": [
+      {
+        "id": 5,
+        "title": "Document 5"
+      }
+    ]
+  }
+]

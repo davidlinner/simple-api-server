@@ -40,21 +40,50 @@
 import {Router} from "express";
 import {existsSync, promises} from "fs";
 
-const DATA_FILE = './patients.json';
+const PATIENTS_FILE = './patients.json';
+
+const TREATMENTS_FILE = './treatments.json';
+const APPOINTMENTS_FILE = './appointment.json';
 
 async function savePatients(patients){
-    await promises.writeFile(DATA_FILE, JSON.stringify(patients), {encoding: 'utf-8'})
+    await promises.writeFile(PATIENTS_FILE, JSON.stringify(patients), {encoding: 'utf-8'})
 }
 
 async function readPatients(){
-    if (existsSync(DATA_FILE)){
-        const text = await promises.readFile(DATA_FILE, {encoding: 'utf8'})
+    if (existsSync(PATIENTS_FILE)){
+        const text = await promises.readFile(PATIENTS_FILE, {encoding: 'utf8'})
         return JSON.parse(text);
     }
 
     return [];
 }
 
+async function readAppointments(){
+    if (existsSync(APPOINTMENTS_FILE)){
+        const text = await promises.readFile(APPOINTMENTS_FILE, {encoding: 'utf8'})
+        return JSON.parse(text);
+    }
+
+    return [];
+}
+
+async function saveAppointments(appointments){
+    if (existsSync(APPOINTMENTS_FILE)){
+        const text = JSON.stringify(appointments);
+        await promises.writeFile(APPOINTMENTS_FILE, text,  {encoding: 'utf8'})
+    }
+
+    return [];
+}
+
+async function readTreatments(){
+    if (existsSync(TREATMENTS_FILE)){
+        const text = await promises.readFile(TREATMENTS_FILE, {encoding: 'utf8'})
+        return JSON.parse(text);
+    }
+
+    return [];
+}
 
 const patientsRouter = Router();
 
@@ -93,6 +122,63 @@ patientsRouter.post(
         await savePatients(patients);
 
         response.send({queueNumber: nextQueueNumber})
+    })
+
+
+patientsRouter.get(
+    '/appointments/:patientCode',
+    async (request, response) => {
+
+        const {patientCode} = request.params;
+
+        const appointments = await readAppointments();
+
+        const appointment = appointments.find(appointment => appointment.patientCode === patientCode);
+
+        if(appointment){
+            response.send(appointment)
+        } else {
+            response.sendStatus(404);
+        }
+    })
+
+
+patientsRouter.get(
+    '/treatments/:id',
+    async (request, response) => {
+
+        const id = parseInt(request.params.id);
+
+        const treatments = await readTreatments();
+
+        const treatment = treatments.find(treatment => treatment.id === id);
+
+        if(treatment){
+            response.send(treatment)
+        } else {
+            response.sendStatus(404);
+        }
+    })
+
+patientsRouter.post(
+    '/appointments/:patientCode/checklist',
+    async (request, response) => {
+
+        const patientCode = request.params.patientCode;
+
+        const checklist = request.body;
+
+        const appointments = await readAppointments();
+
+        const appointment = appointments.find(appointment => appointment.patientCode === patientCode);
+
+        if(appointment){
+            appointment.checklist = checklist;
+            await saveAppointments(appointments);
+            response.sendStatus(200);
+        } else {
+            response.sendStatus(404);
+        }
     })
 
 export default patientsRouter;
