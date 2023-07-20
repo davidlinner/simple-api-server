@@ -27,7 +27,7 @@ async function simpleAuthorizer(username, password, callback) {
     }
 }
 
-app.use(basicAuth({
+app.use('/patients', basicAuth({
     authorizer: simpleAuthorizer,
     authorizeAsync: true,
 }))

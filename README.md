@@ -17,6 +17,12 @@ Start API server:
 Or execute in the ide with creating a run configuration. Right-click the file `main.js` and select *Run* from
 context menu.
 
+Initial credentials are: user **api**, password **123**
+
+## Docs
+
+Once the server is started you find the documentation here at http://localhost:8000/api-docs
+
 ## Tests 
 
 Run tests with:

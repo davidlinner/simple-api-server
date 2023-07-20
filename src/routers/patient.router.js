@@ -62,7 +62,7 @@ const patientsRouter = Router();
 /**
  * @openapi
  * /patients/do-admiss:
- *   put:
+ *   post:
  *      description: Returns all items on the shopping list.
  *      requestBody:
  *          description: The data of the patient.
