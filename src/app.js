@@ -4,42 +4,38 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import basicAuth from 'express-basic-auth';
 import bcrypt from 'bcrypt';
 
-import itemsRouter from "./routers/items.router.js";
-import {createDataFileIfNotExists} from "./data.js";
+import collectionsRouter from "./routers/collections.router.js";
 
 const app = express()
-app.use(express.static('www'));
-app.use(express.urlencoded());
 app.use(express.json());
 
 const USERS = {
-    'david' : '$2b$10$3vLRdEC62e1On1/CrfJt.OE1vG4y2kAjjPyNXx04GpfcMBNLjpA1i'
+    'student' : '$2b$10$NKKl7tyZwkyEmgCJkco6g.BcqBg4vCO8wqeg0P9GX5XdSL4iPQ.oi'
 }
 
-async function myAuthorizer(username, password, callback) {
+function myAuthorizer(username, password, callback) {
     if (Object.keys(USERS).includes(username)){
-        const passwordMatches = await bcrypt.compare(password, USERS[username]);
-        callback(null, passwordMatches)
+        bcrypt.compare(password, USERS[username])
+            .then(passwordMatches =>  callback(null, passwordMatches))
+            .catch(callback);
     } else {
         callback(null, false)
     }
 }
 
-app.use(basicAuth({
+app.use('/collections', basicAuth({
     authorizer: myAuthorizer,
     authorizeAsync: true,
 }))
 
-app.use(createDataFileIfNotExists());
-
-app.use('/', itemsRouter)
+app.use('/collections', collectionsRouter)
 
 const openAPIOptions = {
     failOnErrors: true, // Whether or not to throw when parsing errors. Defaults to false.
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Shopping List',
+            title: 'Generic API Server for any collection of items',
             version: '1.0.0',
         },
     },
